@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#données à ne pas envoyer
+data/
+Modèles/
+Résultats/
+Pneumonia_detection.py
