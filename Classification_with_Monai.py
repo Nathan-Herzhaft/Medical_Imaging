@@ -1,5 +1,6 @@
 # %%
 import os
+from IPython.display import clear_output
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
@@ -125,8 +126,10 @@ print("Définition de la classe des échantillons d'inputs")
 train_input = Sample_Data(X_train, y_train,train_transforms)
 val_input = Sample_Data(X_val,y_val,val_transforms)
 
-train_dataloader = DataLoader(train_input, batch_size=64)
-val_dataloader = DataLoader(val_input,batch_size=64)
+train_batch_size = 256
+val_batch_size = 64
+train_dataloader = DataLoader(train_input, batch_size=train_batch_size)
+val_dataloader = DataLoader(val_input,batch_size=val_batch_size)
 print("Initialisation de :\n\n-train_dataloader, le dataloader destiné à l'entraînement du réseau\n\nval_dataloader, le dataloader destiné aux calculs de performances de ce réseau")
 
 
@@ -141,7 +144,7 @@ model = DenseNet121(
 for param in model.parameters():
     param.requires_grad = False
 
-model.class_layer = nn.Sequential(
+model.class_layers = nn.Sequential(
           nn.ReLU(inplace=True),
           nn.AdaptiveAvgPool2d(output_size=1),
           nn.Flatten(start_dim=1, end_dim=-1),
@@ -152,10 +155,12 @@ model = model.to('cpu')
 print('Définition du modèle utilisé')
 
 
+
 # %%
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     model.train()
+    nb_batches = size//train_batch_size
     for batch, (X, y) in enumerate(dataloader):
         X, y = X.to('cpu'), y.to('cpu')
 
@@ -169,8 +174,9 @@ def train(dataloader, model, loss_fn, optimizer):
         optimizer.step()
 
 
-        loss, current = loss.item(), batch * len(X)
-        print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        loss = loss.item()
+        print(f"loss : {loss:>7f}    batch : [{batch+1}/{nb_batches+1}]")
+        #print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
 
 def test(dataloader, model, loss_fn):
@@ -192,27 +198,31 @@ def test(dataloader, model, loss_fn):
 print("Initialisation des fonctions d'entraînement et de test")
 
 # %%
-def to_train(model) :
-    for param in model.parameters() :
-        if param.requires_grad == True :
-            yield param
-
-# %%
-epochs = 5
+epochs = 10
 history = []
 loss_function = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(head, 1e-5)
+optimizer = torch.optim.Adam(model.class_layers.parameters(), 0.01)
+
+print("Initalisation des paramètres d'entraînement du modèle")
+
+
+
+# %%
+print('Entraînement')
 for t in range(epochs):
-    print(f"Epoch {t+1}\n-------------------------------")
+    print(f"Epoch {t+1}/{epochs}\n-------------------------------")
     train(train_dataloader, model, loss_function, optimizer)
     history.append(test(val_dataloader, model, loss_function))
 print("Entraînement terminé !")
 
 # %%
+torch.save(model, 'Modèles/Monai_pneumonia_detection.pt')
+
+# %%
 def plot_loss(history) :
-    x = np.linspace(1,5,5)
+    x = np.linspace(1,epochs,epochs)
     y = []
-    for i in range(5) :
+    for i in range(epochs) :
         y.append(history[i][0])
     plt.plot(x,y)
     plt.xlabel('epochs')
@@ -221,15 +231,20 @@ def plot_loss(history) :
 
 # %%
 def plot_accuracy(history) :
-    x = np.linspace(1,5,5)
+    x = np.linspace(1,epochs,epochs)
     y = []
-    for i in range(5) :
+    for i in range(epochs) :
         y.append(history[i][1])
     plt.plot(x,y)
     plt.xlabel('epochs')
     plt.ylabel('Accuracy')
     plt.title('Validation Accuracy')
 
+
+# %%
+plot_loss(history)
+
 # %%
 plot_accuracy(history)
-# %%
+
+
