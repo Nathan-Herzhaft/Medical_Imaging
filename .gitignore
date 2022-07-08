@@ -129,8 +129,7 @@ dmypy.json
 .pyre/
 
 #données à ne pas envoyer
-data/
-Modèles/
-Résultats/
-Pneumonia_detection.py
-COVID-19-20/
+Grand_Challenge-Segmentation/data/
+Kaggle_Challenge-Classification/data/
+Kaggle_Challenge-Detection/data/
+Kaggle_Challenge-Detection/vision/
