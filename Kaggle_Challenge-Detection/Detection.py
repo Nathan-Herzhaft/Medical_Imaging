@@ -37,15 +37,32 @@ print('Modules imported successfully')
 root = 'data/'
 
 def read_image(image_path):
+    """_summary_
+
+    Args:
+        image_path (string) : dicome file path
+
+    Returns:
+        im (_type_) : 2D array of the image
+    """    
     dcm_data = pydicom.read_file(image_path)
     im = dcm_data.pixel_array
     return im
 
 def get_box_coord(Dataframe, Id):
-   boxes_array = Dataframe[Dataframe["patientId"] == Id][["x", "y",        
-   "x_max", "y_max"]].values
+    """_summary_
+
+    Args:
+        Dataframe (pandas Dataframe): dataset
+        Id (str): patient id indexed in the dataset
+
+    Returns:
+        boxes_array (array) : array of the 4 box coordinates
+    """    
+    boxes_array = Dataframe[Dataframe["patientId"] == Id][["x", "y",        
+    "x_max", "y_max"]].values
    
-   return boxes_array
+    return boxes_array
 
 labels_csv = pd.read_csv(os.path.join(root,'stage_2_train_labels.csv'))
 
@@ -80,16 +97,26 @@ print(f"Training sample size : {len(train_df)}\nValidation sample size : {len(va
 # 3. Define input data and model classes
 
 def train_tfms():
-   transforms = []
-   # converts the image, a PIL image, into a PyTorch Tensor
-   transforms.append(T.ToTensor())
-   return T.Compose(transforms)
+    """_summary_
+
+    Returns:
+        (Transform Compose) : sequence of transformations to apply to training dataset
+    """    
+    transforms = []
+    # converts the image, a PIL image, into a PyTorch Tensor
+    transforms.append(T.ToTensor())
+    return T.Compose(transforms)
 
 def val_tfms():
-   transforms = []
-   # converts the image, a PIL image, into a PyTorch Tensor
-   transforms.append(T.ToTensor())
-   return T.Compose(transforms)
+    """_summary_
+
+    Returns:
+        (Transform Compose) : sequence of transformations to apply to validation dataset
+    """    
+    transforms = []
+    # converts the image, a PIL image, into a PyTorch Tensor
+    transforms.append(T.ToTensor())
+    return T.Compose(transforms)
 
 class RSNA(Dataset):
     def __init__(self, path, Dataframe, transforms=None):
@@ -135,17 +162,25 @@ batch_size = 8
 train_dl = DataLoader(train_ds, batch_size, shuffle=True, collate_fn=utils.collate_fn)
 val_dl = DataLoader(val_ds, batch_size*2, collate_fn=utils.collate_fn)
 
-def get_model(num_classes): #à modifier pour utiliser un autre modèle
-   # load an object detection model pre-trained on COCO
-   model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
-   for param in model.parameters():
-    param.requires_grad = False
-   # get the number of input features for the classifier
-   in_features = model.roi_heads.box_predictor.cls_score.in_features
-   # replace the pre-trained head with a new on
-   model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+def get_model(num_classes):
+    """_summary_
+
+    Args:
+        num_classes (int): dimension of the output
+
+    Returns:
+        (Neural Network Class) : pretrained loaded model with reinitialized predictor
+    """    
+    # load an object detection model pre-trained on COCO
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+    for param in model.parameters():
+        param.requires_grad = False
+    # get the number of input features for the classifier
+    in_features = model.roi_heads.box_predictor.cls_score.in_features
+    # replace the pre-trained head with a new on
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
    
-   return model
+    return model
 
 num_classes = 2
 model = get_model(num_classes)
@@ -165,22 +200,36 @@ print('Model and DataLoader classes defined successfully')
 # 4. Visualize an example of object detection
 
 def draw_bounding_box(img, label_boxes):
-  all_imgs = []
-  for i in range(img.shape[0]):        
-      image = img[i,:,:,:]
-      image = image.squeeze(0)
-      im = Image.fromarray(image.mul(255).byte().numpy())
-      draw = ImageDraw.Draw(im)
-      labels = label_boxes[i]['boxes']
-      for elem in range(len(labels)):
-        draw.rectangle([(labels[elem][0], labels[elem][1]),
-        (labels[elem][2], labels[elem][3])], 
-        outline ="red", width = 10)
-      all_imgs.append(np.array(im))
-  all_imgs = np.array(all_imgs)
-  return T.ToTensor()(all_imgs)
+    """_summary_
+
+    Args:
+        img (array): stacked images to draw
+        label_boxes (labels in DataLaoder): box description
+
+    Returns:
+        (Tensor): all images with drawn boxes
+    """    
+    all_imgs = []
+    for i in range(img.shape[0]):        
+        image = img[i,:,:,:]
+        image = image.squeeze(0)
+        im = Image.fromarray(image.mul(255).byte().numpy())
+        draw = ImageDraw.Draw(im)
+        labels = label_boxes[i]['boxes']
+        for elem in range(len(labels)):
+            draw.rectangle([(labels[elem][0], labels[elem][1]),
+            (labels[elem][2], labels[elem][3])], 
+                outline ="red", width = 10)
+        all_imgs.append(np.array(im))
+    all_imgs = np.array(all_imgs)
+    return T.ToTensor()(all_imgs)
 
 def show_batch(dataloader):
+    """_summary_
+
+    Args:
+        dataloader (Dataloader): dataloader from which we extract the sample
+    """    
     for images, labels in dataloader:
         image = draw_bounding_box(torch.stack(images), labels)
         image = image.permute(1,2,0).mul(255).byte().numpy()

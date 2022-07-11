@@ -1,15 +1,16 @@
+# %%
+# 1. Import useful libraries
+
 import argparse
 import glob
 import logging
 import os
 import shutil
 import sys
-
 import numpy as np
 import torch
 import torch.nn as nn
 from ignite.contrib.handlers import ProgressBar
-
 import monai
 from monai.handlers import CheckpointSaver, MeanDice, StatsHandler, ValidationHandler, from_engine
 from monai.transforms import (
@@ -28,6 +29,19 @@ from monai.transforms import (
     EnsureTyped,
 )
 
+print('Modules imported successfully')
+
+
+
+
+
+
+
+
+
+
+# %%
+# 2. Define transformations
 
 def get_xforms(mode="train", keys=("image", "label")):
     """returns a composed transform for train/val/infer."""
@@ -66,6 +80,16 @@ def get_xforms(mode="train", keys=("image", "label")):
     xforms.extend([CastToTyped(keys, dtype=dtype), EnsureTyped(keys)])
     return monai.transforms.Compose(xforms)
 
+
+
+
+
+
+
+
+
+# %%
+# 3. Define model and loss function
 
 def get_net():
     """returns a unet model instance."""
@@ -111,6 +135,16 @@ class DiceCELoss(nn.Module):
         cross_entropy = self.cross_entropy(y_pred, torch.squeeze(y_true, dim=1).long())
         return dice + cross_entropy
 
+
+
+
+
+
+
+
+
+# %%
+# 4. Define training and inference functions
 
 def train(data_folder=".", model_folder="runs"):
     """run a training pipeline."""
@@ -267,6 +301,17 @@ def infer(data_folder=".", model_folder="runs", prediction_folder="output"):
     logging.info(f"predictions copied to {submission_dir}.")
 
 
+
+
+
+
+
+
+
+
+# %%
+# 5. Train the model
+
 if __name__ == "__main__":
     """
     Usage:
@@ -293,3 +338,4 @@ if __name__ == "__main__":
         infer(data_folder=data_folder, model_folder=args.model_folder)
     else:
         raise ValueError("Unknown mode.")
+# %%

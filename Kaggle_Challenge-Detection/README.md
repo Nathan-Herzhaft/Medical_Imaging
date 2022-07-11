@@ -1,7 +1,7 @@
 # General Description  
 
 This file contains a classic commented pipeline of medical imaging detection. This algorithm was designed as part of the Kaggle RSNA pneumonia detection challenge, the goal is to diagnose and locate pneumonia using a lung scan. The ouput of the neural network is a box, which locates the disease on the lung if a pnuemonia is detected, and surrounds the whole image if not.  
-This piepline does not use a specialized library python for medical deeplearning, since detection is rarely used in medicine. Refer to Classification or Segmentation examples to use these libraries.
+This pipeline does not use a specialized library python for medical deeplearning, since detection is rarely used in medicine. Refer to Classification or Segmentation examples to use these libraries.
   
 ![alt text](Images\Scan_Example.png "Scan Example")
   
@@ -13,6 +13,7 @@ On this example, we can see a pneumonia on the right lung of the patient, recogn
 
 We use several libraries and packages that need to be installed upstream :
 - Torchvision package
+- Pycocotools
 - PyTorch
 - Pydicom
 - Pandas
@@ -22,7 +23,7 @@ We use several libraries and packages that need to be installed upstream :
 
 ## > Torchvision package
 
-torchvision is a package that can be downloaded from github on the link below. It contains a framework for training a neural network of detection. 
+torchvision is a package that can be downloaded from github on the link below, using pycocotools. It contains a framework for training a neural network of detection.  
 Link : https://github.com/pytorch/vision
 
 ## > Pydicom
@@ -77,7 +78,7 @@ This segment offers an overview of the data used for training, and the correspon
   
 ## > Train the_model
 After the settings of our parameters, it is time to start the training. 
-It is possible to change the paramters of the training, like the number of epochs or the learning rate, by modifying these lines :
+It is possible to change the parameters of the training, like the number of epochs or the learning rate, by modifying these lines :
 ```python
 num_epochs = 5
 params = [p for p in model.parameters() if p.requires_grad]
