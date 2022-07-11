@@ -1,7 +1,8 @@
 # General Description  
 
 This file contains a classic commented pipeline of medical imaging segmentation. This algorithm was designed as part of the Grand Challenge - COVID 19 lung CT lesion segmentation, the goal is to diagnose and locate lung lesions using lung scans.
-This pipeline does not use a specialized library python for medical deeplearning, since detection is rarely used in medicine. Refer to Classification or Segmentation examples to use these libraries. 
+
+![alt text](Images\Scan_Example.png "Scan Example")
 
 ---
 
@@ -15,7 +16,9 @@ We use several libraries and packages that need to be installed upstream :
 ## > Monai
 
 Monai proposes a framework to support the creation of a computervision pipeline in the medical field. It is an extension of PyTorch offering useful classes, metrics, or pre-trained networks.  
-Link : https://monai.io/
+Link : https://monai.io/  
+Command for installing :  
+pip install "git+https://github.com/Project-MONAI/MONAI#egg=monai[nibabel,ignite,tqdm]"
 
 ---
 
@@ -41,15 +44,30 @@ The Segmentation file is divided into 5 segments which can be compiled separatel
 First segment is simply the import of the libraries presented above.
 
 ## > Define transformations
-Using monai framework, we define the transformations to apply to the inputs.
+Using monai framework, we define the transformations to apply to the inputs. You can find the description of each transformation on the monai website.
 
 ## > Define model and loss function
-Using monai framework, we define our model.Here, we use a Basic UNet pre-trained model.
+Using monai framework, we define our neural network and inferer. Here, we use a Basic UNet pre-trained model. For the Loss function, a basic crosse entropy function is used.
 
 ## > Define training and inference functions
 Initialize the settings of the training through training and inference functions. It is possible to change the parameters of the training, like the number of epochs or the learning rate.
-  
-![alt text](Images\Box_examples.png "Box Examples")  
+
+You can make changes on the model paramaters by modifying these lines :
+```python
+batch_size = 2
+```
+and
+```python
+max_epochs, lr, momentum = 500, 1e-4, 0.95
+```
   
 ## > Train the_model
-After the settings of our parameters, it is time to start the training. 
+After the settings of our parameters, it is time to start the training. This segment use parser to define a command starting the training. Therefore, this algorithm is started using the terminal.  
+
+To start the training, type this in the terminal :  
+  
+python Grand_Challenge-Segmentation/Segmentation.py train --data_folder "Grand_Challenge-Segmentation/data/Train" --model_folder "runs"  
+  
+During training, the top three models will be selected based on the per-epoch validation and stored at --model_folders.  
+  
+Change the name of the file or the data_folder argument if you customized your files differently.

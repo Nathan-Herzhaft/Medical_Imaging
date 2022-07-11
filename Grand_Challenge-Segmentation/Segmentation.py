@@ -44,7 +44,15 @@ print('Modules imported successfully')
 # 2. Define transformations
 
 def get_xforms(mode="train", keys=("image", "label")):
-    """returns a composed transform for train/val/infer."""
+    """Define transformations to apply to training, validation or inference dataset
+
+    Args:
+        mode (str, optional): Define the mode to apply : train, val or infer. Defaults to "train"
+        keys (tuple, optional): Defaults to ("image", "label")
+
+    Returns:
+        (Transforms Compose): composition of transformation to apply to our dataset
+    """    
 
     xforms = [
         LoadImaged(keys),
@@ -80,6 +88,9 @@ def get_xforms(mode="train", keys=("image", "label")):
     xforms.extend([CastToTyped(keys, dtype=dtype), EnsureTyped(keys)])
     return monai.transforms.Compose(xforms)
 
+print('Data transformations defined successfully')
+
+
 
 
 
@@ -92,8 +103,12 @@ def get_xforms(mode="train", keys=("image", "label")):
 # 3. Define model and loss function
 
 def get_net():
-    """returns a unet model instance."""
+    """Load the pretrained model
 
+    Returns:
+        (Model) : an imported pre-trained UNet network
+    """    
+    
     num_classes = 2
     net = monai.networks.nets.BasicUNet(
         spatial_dims=3,
@@ -105,8 +120,12 @@ def get_net():
     return net
 
 
-def get_inferer(_mode=None):
-    """returns a sliding window inference instance."""
+def get_inferer():  
+    """Load the inferer of the model
+
+    Returns:
+        (Inferer) : sliding window inferer
+    """    
 
     patch_size = (192, 192, 16)
     sw_batch_size, overlap = 2, 0.5
@@ -135,6 +154,9 @@ class DiceCELoss(nn.Module):
         cross_entropy = self.cross_entropy(y_pred, torch.squeeze(y_true, dim=1).long())
         return dice + cross_entropy
 
+print('Model and loss functions classes defined successfully')
+
+
 
 
 
@@ -146,8 +168,13 @@ class DiceCELoss(nn.Module):
 # %%
 # 4. Define training and inference functions
 
-def train(data_folder=".", model_folder="runs"):
-    """run a training pipeline."""
+def train(data_folder, model_folder="Grand_Challenge-Segmentation/runs"):
+    """Run the training of the model
+
+    Args:
+        data_folder (str): path of the data folder from which to extract data
+        model_folder (str, optional): Defaults to "Grand_Challenge-Segmentation/runs"
+    """    
 
     images = sorted(glob.glob(os.path.join(data_folder, "*_ct.nii.gz")))
     labels = sorted(glob.glob(os.path.join(data_folder, "*_seg.nii.gz")))
@@ -234,10 +261,15 @@ def train(data_folder=".", model_folder="runs"):
     trainer.run()
 
 
-def infer(data_folder=".", model_folder="runs", prediction_folder="output"):
+def infer(data_folder, model_folder="Grand_Challenge-Segmentation/runs", prediction_folder="Grange_Challend-Segmentation/output"):
+    """Run inference
+
+    Args:
+        data_folder (str, optional): path of the data folder from which to extract data
+        model_folder (str, optional): path of the folder containing the model. Defaults to "Grand_Challenge-Segmentation/runs"
+        prediction_folder (str, optional): path of the folder containing final submission. Defaults to "Grand_Challenge-Segmentation/output"
     """
-    run inference, the output folder will be "./output"
-    """
+    
     ckpts = sorted(glob.glob(os.path.join(model_folder, "*.pt")))
     ckpt = ckpts[-1]
     for x in ckpts:
@@ -300,6 +332,8 @@ def infer(data_folder=".", model_folder="runs", prediction_folder="output"):
         shutil.copy(f, to_name)
     logging.info(f"predictions copied to {submission_dir}.")
 
+print('Training and inference functions defined successfully')
+
 
 
 
@@ -310,13 +344,12 @@ def infer(data_folder=".", model_folder="runs", prediction_folder="output"):
 
 
 # %%
-# 5. Train the model
-
+# 5. Launch training
 if __name__ == "__main__":
     """
     Usage:
-        python run_net.py train --data_folder "data/Train" # run the training pipeline
-        python run_net.py infer --data_folder "data/Validation" # run the inference pipeline
+        python Grand_Challenge-Segmentation/Segmentation.py train --data_folder "data/Train" # run the training pipeline
+        python Grand_Challenge-Segmentation/Segmentation.py infer --data_folder "data/Validation" # run the inference pipeline
     """
     parser = argparse.ArgumentParser(description="Run a basic UNet segmentation baseline.")
     parser.add_argument(
@@ -338,4 +371,3 @@ if __name__ == "__main__":
         infer(data_folder=data_folder, model_folder=args.model_folder)
     else:
         raise ValueError("Unknown mode.")
-# %%

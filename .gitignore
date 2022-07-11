@@ -130,6 +130,8 @@ dmypy.json
 
 #données à ne pas envoyer
 Grand_Challenge-Segmentation/data/
+Grand_Challenge-Segmentation/runs/
+Grand_Challenge-Segmentation/ouput/
 Kaggle_Challenge-Classification/data/
 Kaggle_Challenge-Detection/data/
 Kaggle_Challenge-Detection/vision/

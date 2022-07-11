@@ -37,7 +37,7 @@ print('Modules imported successfully')
 root = 'data/'
 
 def read_image(image_path):
-    """_summary_
+    """Read an image for dicom file path
 
     Args:
         image_path (string) : dicome file path
@@ -50,7 +50,7 @@ def read_image(image_path):
     return im
 
 def get_box_coord(Dataframe, Id):
-    """_summary_
+    """Get the 4 coordinates of the box considered
 
     Args:
         Dataframe (pandas Dataframe): dataset
@@ -97,10 +97,10 @@ print(f"Training sample size : {len(train_df)}\nValidation sample size : {len(va
 # 3. Define input data and model classes
 
 def train_tfms():
-    """_summary_
+    """Define transformations to apply to training dataset
 
     Returns:
-        (Transform Compose) : sequence of transformations to apply to training dataset
+        (Transform Compose) : sequence of transformations
     """    
     transforms = []
     # converts the image, a PIL image, into a PyTorch Tensor
@@ -108,10 +108,11 @@ def train_tfms():
     return T.Compose(transforms)
 
 def val_tfms():
-    """_summary_
+    """Define transformations to apply to validation dataset
+
 
     Returns:
-        (Transform Compose) : sequence of transformations to apply to validation dataset
+        (Transform Compose) : sequence of transformations
     """    
     transforms = []
     # converts the image, a PIL image, into a PyTorch Tensor
@@ -163,7 +164,7 @@ train_dl = DataLoader(train_ds, batch_size, shuffle=True, collate_fn=utils.colla
 val_dl = DataLoader(val_ds, batch_size*2, collate_fn=utils.collate_fn)
 
 def get_model(num_classes):
-    """_summary_
+    """Load the pretrained model
 
     Args:
         num_classes (int): dimension of the output
@@ -200,7 +201,7 @@ print('Model and DataLoader classes defined successfully')
 # 4. Visualize an example of object detection
 
 def draw_bounding_box(img, label_boxes):
-    """_summary_
+    """Return an image with apparent bounding box
 
     Args:
         img (array): stacked images to draw
@@ -225,7 +226,7 @@ def draw_bounding_box(img, label_boxes):
     return T.ToTensor()(all_imgs)
 
 def show_batch(dataloader):
-    """_summary_
+    """Sample of images with bounding box to visualize an example
 
     Args:
         dataloader (Dataloader): dataloader from which we extract the sample

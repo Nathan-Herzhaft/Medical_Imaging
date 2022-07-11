@@ -42,7 +42,7 @@ root = 'data/'
 
 
 def readAndReshapeImage(image):
-    """_summary_
+    """Resize the image to the right format
 
     Args:
         image (2D array): a 2D-array of pixels to resize
@@ -57,13 +57,13 @@ def readAndReshapeImage(image):
     return res
 
 def fit_transform(Labels) :
-    """_summary_
+    """Mpdify labels list turning arrays into vectors of two numbers [0,1] or [1,0], format required by the loss function
 
     Args:
         Labels (numpy array): a list of 0 or 1 labels from the input
 
     Returns:
-        new_Labels (numpy array): a modified list turning arrays into vectors of two numbers [0,1] or [1,0], format required by the loss function
+        new_Labels (numpy array): modified list of [0,1] and [1,0]
     """    
 
     new_Labels = []
@@ -75,14 +75,14 @@ def fit_transform(Labels) :
     return new_Labels
         
 def get_data(Data):
-    """_summary_
+    """Load data from the dataframe and returns two arrays of formatted inputs
 
     Args:
         Data (Pandas Dataframe): Dataframe containing the data
 
     Returns:
        input_Images (numpy array): Array of all images
-       input_Images (numpy array): Array of all lables transformed into vectors
+       input_Labels (numpy array): Array of all labels transformed into vectors
     """  
 
     imageList = []
@@ -219,7 +219,7 @@ class Timer(object):
 timer = Timer()  
 
 def train(dataloader, model, loss_fn, optimizer, scheduler):
-    """_summary_
+    """Run the training of the model
 
     Args:
         dataloader (DataLoader Class): a DataLoader for the input used by the model
@@ -253,8 +253,7 @@ def train(dataloader, model, loss_fn, optimizer, scheduler):
     scheduler.step()
 
 def test(dataloader, model, loss_fn):
-    """_summary_
-
+    """Run a validation test of the model
     Args:
         dataloader (DataLoader Class): a DataLoader for the validation inputs
         model (Model Class): the model to train
