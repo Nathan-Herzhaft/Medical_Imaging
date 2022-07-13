@@ -1,9 +1,15 @@
 # Folder general description
 This folder contains 3 + 1 use-cases of computer vision training algorithms apllied to medicine. It is designed to apprehend and learn medicine-oriented packages for deeplearning in python. Through 3 classical problematics : Classification, Detection and Segmentation, we discover the basis of computervision and learn medical specificities.
 
+# Medical Imaging
+These algorithms are based on medical data, whose formats are specific and are read by specialized python libraries.  
+  
+![alt text](Images\Scan_Example.png "Scan Example")  
+Lung Scan opened with pydicom library
+
 # Folder Structure
-The file contains 3 commented and documented algorithms, organized according to the same architecture. Additionally, you will find a 4th file for 3D segmentation, whose pipeline is more complex and comes from another opensource challenge.there. Each folder is named after the opensource challenge from which it is taken, and has a unique .py file.  
-In each file, it is necessary to download the training datasets, available in opensource, on the challenges websites. Then, you will have to store the dataset in a file named "data", next to the .py file, so that the algorithm automatically finds it. If you choose to store it differently, changes will be necessary in the algorithms to update.  
+The file contains 3 commented and documented algorithms, organized according to the same architecture. Additionally, you will find a 4th file for 3D segmentation, whose pipeline is more complex and comes from another opensource challenge. Each folder is named after the opensource challenge from which it is taken, and has a unique .py file.  
+In each folder, it is necessary to download the training datasets, available in opensource, on the challenges websites. Then, you will have to store the dataset in a file named "data", next to the .py file, so that the algorithm automatically finds it. If you choose to store it differently, changes will be necessary in the algorithms to update.  
 Here are the link to download the data :  
   
 1. [Classification](https://www.kaggle.com/competitions/rsna-pneumonia-detection-challenge/data)
@@ -35,8 +41,3 @@ The last typical problem to study is segmentation. Still based on Kaggle, we see
 ## > Segmentation 3D
 The body of this git focuses on 2D algorithms based on Kaggle. Therefore you will find an additional example for the 3D case, which is useful to get familiar with the preprocess and the adapted transformations. This dataset is no longer based on a Kaggle challenge, but on the Grand Challenge for lung lesion segmentation. The goal is to locate the lung lesions on a 3D CT scan, using monai framework.
 
-# Medical Imaging
-These algorithms are based on medical data, whose formats are specific and are read by specialized python libraries.  
-  
-![alt text](Images\Scan_Example.png "Scan Example")  
-Lung Scan opened with pydicom library
