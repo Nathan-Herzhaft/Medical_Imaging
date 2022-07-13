@@ -43,6 +43,16 @@ print('Modules imported successfully')
 # 2. Load Data
 
 def generate_input(data_folder):
+    """generate images and segmented images from the folder
+
+    Args:
+        data_folder (str): path of the data folder from where to extract the data
+
+    Returns:
+        images (list): sorted paths of the input images
+        segs (list): sorted paths of the segmented images
+    """    
+    
     images = sorted(glob(os.path.join(data_folder, "*_scan.tif")))
     segs = sorted(glob(os.path.join(data_folder, "*_mask.tif")))
     return images, segs
@@ -59,11 +69,19 @@ print(f'Number of files : {len(images)}')
 
 
 
-
 # %%
 # 3. Define loader classes
 
 def get_transforms(mode) :
+    """Define transformations to apply to data. Specific transformation are applied to training inputs
+
+    Args:
+        mode (str): mode of data : 'train' or else
+
+    Returns:
+        train_transforms (Compose): Composition of transformations
+    """
+        
     trans = [
         LoadImage(image_only=True), 
         AddChannel(), 
@@ -80,7 +98,24 @@ def get_transforms(mode) :
 train_transforms, val_transforms = get_transforms('train'), get_transforms('val')
 
 
-def get_loaders(images, segs, train_transforms, val_transforms, n_train, n_val) :    
+def get_loaders(images, segs, train_transforms, val_transforms, n_train, n_val) :
+    """Define dataset and dataloader classes for the model
+
+    Args:
+        images (list): sorted paths of the input images
+        segs (list): sorted paths of the segmented images
+        train_transforms (Compose): Composition of transformations for training
+        val_transforms (Compose): Composition of transformations for validation
+        n_train (int): number of inputs loaded for training
+        n_val (int): number of inputs loaded for validation
+
+    Returns:
+        train_loader (DataLaoder): Loader for training
+        val_loader (DataLaoder): Loader for validation
+        train_ds (DataSet): Dataset for training
+        val_ds (DataSet): Dataset for validation
+    """
+            
     train_ds = ArrayDataset(images[:n_train], train_transforms, segs[:n_train], train_transforms)
     train_loader = DataLoader(train_ds, batch_size=128, shuffle=True)
     
@@ -98,12 +133,12 @@ train_loader, val_loader, train_ds, val_ds = get_loaders(images, segs, train_tra
 
 
 
-
-
 # %%
 # 4. Train the model
 
 def training() :
+    """Launch the training, supposing DataLoaders and Datasets have already been defined using previous functions"""
+        
     dice_metric = DiceMetric(include_background=True, reduction="mean", get_not_nans=False)
     post_trans = Compose([EnsureType(), Activations(sigmoid=True), AsDiscrete(threshold=0.5)])
     # create BasicUNet, DiceLoss and Adam optimizer
