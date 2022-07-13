@@ -129,9 +129,11 @@ dmypy.json
 .pyre/
 
 #données à ne pas envoyer
-Grand_Challenge-Segmentation/data/
-Grand_Challenge-Segmentation/runs/
-Grand_Challenge-Segmentation/ouput/
+Grand_Challenge-Segmentation3D/data/
+Grand_Challenge-Segmentation3D/runs/
+Grand_Challenge-Segmentation3D/output/
+Grand_Challenge-Segmentation3D/Visualize.py
 Kaggle_Challenge-Classification/data/
 Kaggle_Challenge-Detection/data/
 Kaggle_Challenge-Detection/vision/
+Kaggle_Challenge-Segmentation2D/data
